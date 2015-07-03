@@ -22,6 +22,7 @@ namespace ExpressionParser.Main
         public IEnumerable<Token> Tokenize()
         {
             var tokens = new List<Token>();
+            var parenthesisDepth = 0;
             while (_reader.Peek() != -1)
             {
                 while (Char.IsWhiteSpace((char)_reader.Peek()))
@@ -36,11 +37,13 @@ namespace ExpressionParser.Main
                 switch (c)
                 {
                     case '(':
-                        tokens.Add(new OpenParenthesisToken());
+                        parenthesisDepth++;
+                        tokens.Add(new OpenParenthesisToken(parenthesisDepth));
                         _reader.Read();
                         break;
                     case ')':
-                        tokens.Add(new ClosedParenthesisToken());
+                        tokens.Add(new ClosedParenthesisToken(parenthesisDepth));
+                        parenthesisDepth--;
                         _reader.Read();
                         break;
 
@@ -96,7 +99,7 @@ namespace ExpressionParser.Main
                     default:
                         if (Char.IsLetter(c))
                         {
-                            var token = ParseKeyword();
+                            var token = ParseKeyword(parenthesisDepth);
                             tokens.Add(token);
                         }
                         else
@@ -128,7 +131,7 @@ namespace ExpressionParser.Main
                 _text.Length - remainingText.Length, remainingText));
         }
 
-        private Token ParseKeyword()
+        private Token ParseKeyword(int depth)
         {
             var text = new StringBuilder();
             while (Char.IsLetter((char)_reader.Peek()))
@@ -141,9 +144,9 @@ namespace ExpressionParser.Main
             switch (potentialKeyword)
             {
                 case "and":
-                    return new AndToken();
+                    return new AndToken(depth);
                 case "or":
-                    return new OrToken();
+                    return new OrToken(depth);
                 default:
                     return CheckPropertyToken(potentialKeyword);
             }

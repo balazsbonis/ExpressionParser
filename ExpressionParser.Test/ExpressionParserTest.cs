@@ -34,6 +34,13 @@ namespace ExpressionParser.Test
             testParser.ExpressionToParse = "StringValue = 'AAA'";
             var clause = testParser.ParseExpression();
         }
+
+        [TestMethod]
+        public void TestComplexExpressions()
+        {
+            testParser.ExpressionToParse = "StringValue = 'AAA' AND (IntValue > '3' OR OtherProperty = 'CCC')";
+            var clause = testParser.ParseExpression();
+        }
     }
 
     public class TestEntity
