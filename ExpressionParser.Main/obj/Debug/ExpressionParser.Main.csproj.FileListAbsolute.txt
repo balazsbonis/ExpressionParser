@@ -1,0 +1,5 @@
+C:\Work\Code\ExpressionParser\ExpressionParser.Main\bin\Debug\ExpressionParser.Main.dll
+C:\Work\Code\ExpressionParser\ExpressionParser.Main\bin\Debug\ExpressionParser.Main.pdb
+C:\Work\Code\ExpressionParser\ExpressionParser.Main\obj\Debug\ExpressionParser.Main.csprojResolveAssemblyReference.cache
+C:\Work\Code\ExpressionParser\ExpressionParser.Main\obj\Debug\ExpressionParser.Main.dll
+C:\Work\Code\ExpressionParser\ExpressionParser.Main\obj\Debug\ExpressionParser.Main.pdb
