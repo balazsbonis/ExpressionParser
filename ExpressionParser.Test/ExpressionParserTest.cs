@@ -39,7 +39,10 @@ namespace ExpressionParser.Test
         public void TestComplexExpressions()
         {
             testParser.ExpressionToParse = "StringValue = 'AAA' AND (IntValue > '3' OR OtherProperty = 'CCC')";
+            var testAgainst =
+                testEntitiesList.Where(x => x.StringValue == "AAA" && (x.IntValue > 3 || x.OtherProperty == "CCC"));
             var clause = testParser.ParseExpression();
+            var testCases = testEntitiesList.Where(clause);
         }
     }
 

@@ -34,7 +34,7 @@ namespace ExpressionParser.Main
                     tList.Add(tokenArray[i]);
                     
                 }
-                return new Formula {Subformula = new List<Formula> {BuildFormula(tList)}};
+                return BuildFormula(tList);
             }
 
             // if there are no parentheses found and not an atomic formula, then we must slice at operators
