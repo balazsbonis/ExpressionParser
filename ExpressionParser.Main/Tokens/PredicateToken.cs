@@ -53,4 +53,12 @@ namespace ExpressionParser.Main.Tokens
             get { return ">="; }
         }
     }
+
+    public class InToken : PredicateToken
+    {
+        public override string Value
+        {
+            get { return "in"; }
+        }
+    }
 }

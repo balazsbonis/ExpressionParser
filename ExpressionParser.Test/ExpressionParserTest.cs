@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ExpressionParser.Test
@@ -8,49 +6,30 @@ namespace ExpressionParser.Test
     [TestClass]
     public class ExpressionParserTest
     {
-        private List<TestEntity> testEntitiesList;
-        private Main.ExpressionParser<TestEntity> testParser;
-
-        public ExpressionParserTest()
-        {
-            testEntitiesList = new List<TestEntity>();
-            testParser = new Main.ExpressionParser<TestEntity>();
-            var random = new Random();
-            for (var i = 0; i < 20; i++)
-            {
-                testEntitiesList.Add(new TestEntity
-                {
-                    DateValue = DateTime.Now.AddMinutes((random.NextDouble() - 0.5) * 15),
-                    IntValue = random.Next(-5, 5),
-                    StringValue = random.Next(0,2) == 1 ? "AAA" : "BBB",
-                    OtherProperty = Guid.NewGuid().ToString().Replace("-", "")
-                });
-            }
-        }
-
         [TestMethod]
-        public void TestSelectionEqual()
+        public void TestSimpleExpressions()
         {
-            testParser.ExpressionToParse = "StringValue = 'AAA'";
-            var clause = testParser.ParseExpression();
+            var ctxt =
+                new ExpressionParserTestContext().WithTestEntities()
+                    .UseExpression("StringValue = 'CCC'");
+            ctxt.AssertCorrectWhereExpression(x => x.StringValue == "CCC");
+            ctxt = ctxt.UseExpression("IntValue <= 3");
+            ctxt.AssertCorrectWhereExpression(x => x.IntValue <= 3);
+            ctxt = ctxt.UseExpression(string.Format("DateValue >= '{0}'", DateTime.Now));
+            ctxt.AssertCorrectWhereExpression(x => x.DateValue >= DateTime.Now);
         }
 
         [TestMethod]
         public void TestComplexExpressions()
         {
-            testParser.ExpressionToParse = "StringValue = 'AAA' AND (IntValue > '3' OR OtherProperty = 'CCC')";
-            var testAgainst =
-                testEntitiesList.Where(x => x.StringValue == "AAA" && (x.IntValue > 3 || x.OtherProperty == "CCC"));
-            var clause = testParser.ParseExpression();
-            var testCases = testEntitiesList.Where(clause);
+            var ctxt =
+                new ExpressionParserTestContext().WithTestEntities(50)
+                    .UseExpression("StringValue != 'AAA' AND (IntValue > 2 OR DateValue < '" +
+                                   DateTime.Now.ToString("s") + "')");
+            ctxt.AssertCorrectWhereExpression(
+                x => x.StringValue != "AAA" && (x.IntValue > 2 || x.DateValue < DateTime.Now));
+            ctxt = ctxt.UseExpression(string.Format("IntValue > 2 OR DoubleValue <= 5.314 AND DateValue >= '{0}'", DateTime.Now));
+            ctxt.AssertCorrectWhereExpression(x => x.IntValue > 2 || x.DoubleValue <= 5.314 && x.DateValue >= DateTime.Now);
         }
-    }
-
-    public class TestEntity
-    {
-        public string StringValue { get; set; }
-        public int IntValue { get; set; }
-        public string OtherProperty { get; set; }
-        public DateTime DateValue { get; set; }
     }
 }

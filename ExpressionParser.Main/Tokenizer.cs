@@ -25,7 +25,7 @@ namespace ExpressionParser.Main
             var parenthesisDepth = 0;
             while (_reader.Peek() != -1)
             {
-                while (Char.IsWhiteSpace((char)_reader.Peek()))
+                while (Char.IsWhiteSpace((char)_reader.Peek()) || ((char)_reader.Peek() == ','))
                 {
                     _reader.Read();
                 }
@@ -102,6 +102,11 @@ namespace ExpressionParser.Main
                             var token = ParseKeyword(parenthesisDepth);
                             tokens.Add(token);
                         }
+                        else if (Char.IsDigit(c))
+                        {
+                            var token = ParseNumber();
+                            tokens.Add(token);
+                        }
                         else
                         {
                             ThrowError();
@@ -147,6 +152,8 @@ namespace ExpressionParser.Main
                     return new AndToken(depth);
                 case "or":
                     return new OrToken(depth);
+                case "in":
+                    return new InToken();
                 default:
                     return CheckPropertyToken(potentialKeyword);
             }
@@ -163,6 +170,16 @@ namespace ExpressionParser.Main
                 return new ObjectPropertyToken(prop);
             }
             throw new Exception("Expected keyword (And, Or) but found " + potentialKeyword);
+        }
+
+        private Token ParseNumber()
+        {
+            var number = new StringBuilder();
+            while (Char.IsDigit((char)_reader.Peek()) || ((char)_reader.Peek() == '.'))
+            {
+                number.Append((char)_reader.Read());
+            }
+            return new PropertyValueToken(number.ToString());
         }
     }
 }
